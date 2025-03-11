@@ -55,7 +55,7 @@ def add_book():
     genre = data.get('genre')
     rating = data.get('rating')
 
-    # Basic validation
+    
     if not title or not author or not genre:
         return jsonify({'error': 'Title, author, and genre are required'}), 400
 
@@ -68,6 +68,16 @@ def add_book():
 def get_book(book_id):
     book = Book.query.get_or_404(book_id)
     return jsonify(book.to_dict())
+
+@app.route('/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({'error': 'Book not found'}), 404
+
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({'message': f'Book {book_id} deleted successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
